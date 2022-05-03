@@ -22,7 +22,10 @@ while True:
         try:
             chdir(deployment[0])
             shell('git pull')
-            shell(deployment[2])
+            if not exists('deploy'):
+                shell(deployment[2])
+            else:
+                run('deploy')
         except:
             pass
         sleep(30)

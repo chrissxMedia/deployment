@@ -1,2 +1,3 @@
 # deployment
-`deployment` uses `siwedt` to deploy webpages.
+
+`deployment` uses `git` and tools like `siwedt` to deploy webpages.
