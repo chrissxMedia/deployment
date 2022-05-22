@@ -5,10 +5,9 @@ from os.path import exists
 from subprocess import run
 from time import sleep
 
+
 def shell(cmd, **kwargs):
     run(cmd, shell=True, check=True, **kwargs)
-
-shell('npm install -g siwedt')
 
 deployments = []
 with open('/etc/deployments.csv') as f:
@@ -20,12 +19,13 @@ with open('/etc/deployments.csv') as f:
 while True:
     for deployment in deployments:
         try:
+            print('cd: ' + deployment[0])
             chdir(deployment[0])
             shell('git pull')
             if not exists('deploy'):
                 shell(deployment[2])
             else:
                 run('deploy')
-        except:
-            pass
+        except Exception as e:
+            print('Exception: ' + e)
         sleep(30)
