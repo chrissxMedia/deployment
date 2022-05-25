@@ -27,5 +27,5 @@ while True:
             else:
                 run('deploy')
         except Exception as e:
-            print('Exception: ' + e)
+            print('Exception: ' + str(e))
         sleep(30)
