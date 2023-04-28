@@ -3,6 +3,7 @@ from csv import reader
 from os import chdir
 from os.path import exists
 from subprocess import run
+from sys import argv
 from time import sleep
 from traceback import print_exc
 
@@ -17,6 +18,9 @@ with open('/etc/deployments.csv', encoding='utf-8') as f:
         deployments.append(tuple(line))
         if not exists(line[0]):
             shell(f'git clone "{line[1]}" "{line[0]}"')
+
+if argv[1] == "--clone-only":
+    exit(0)
 
 while True:
     for deployment in deployments:
