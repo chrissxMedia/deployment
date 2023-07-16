@@ -19,7 +19,7 @@ with open('/etc/deployments.csv', encoding='utf-8') as f:
         if not exists(line[0]):
             shell(f'git clone "{line[1]}" "{line[0]}"')
 
-if argv[1] == "--clone-only":
+if len(argv) >= 2 and argv[1] == "--clone-only":
     exit(0)
 
 while True:
@@ -32,7 +32,7 @@ while True:
                 shell(deployment[2])
             else:
                 # TODO: redirected stdout/err and check=False
-                run('deploy')
+                run('./deploy')
         except Exception as e:
             print_exc()
         sleep(30)
