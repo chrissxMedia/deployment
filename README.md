@@ -41,11 +41,11 @@ yet. That's the next step.
 looks like this:
 
 ```csv
-/var/www/site1,https://git.chrissx.de/site1.git,
-/var/www/site2,https://git.chrissx.de/site2.git,
+/var/www/site1,https://git.chrissx.de/site1.git,./deploy
+/var/www/site2,https://git.chrissx.de/site2.git,./deploy
 ```
 
-The comma at the end is currently an unnecessary idiom, because of the now
+The `,./deploy` at the end is currently an unnecessary idiom, because of the now
 deprecated support for build commands specified in the deployments file itself:
 
 ```csv
@@ -57,7 +57,7 @@ the `deployments.csv` will probably be removed at some point. However,
 specifying it won't ever break `deployment`, so you can put it in as a fallback
 if you really want to.
 
-What you really want is a file called `deploy` at the root of your Git
+What you really want is a file called `deploy` at the root of every Git
 repository that is then automatically executed by `deployment`. It might look
 something like this:
 

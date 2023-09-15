@@ -12,6 +12,7 @@ def shell(cmd, **kwargs):
     print(cmd)
     run(cmd, shell=True, check=True, **kwargs)
 
+# TODO: consider adding the config file as an arg
 deployments = []
 with open('/etc/deployments.csv', encoding='utf-8') as f:
     for line in reader(f):
@@ -25,6 +26,7 @@ if len(argv) >= 2 and argv[1] == "--clone-only":
 while True:
     for deployment in deployments:
         try:
+            # TODO: should deploy still run if we cant pull?
             print('cd ' + deployment[0])
             chdir(deployment[0])
             shell('git pull')
