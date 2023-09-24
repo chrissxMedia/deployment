@@ -6,6 +6,7 @@ from subprocess import run
 from time import sleep
 from traceback import print_exc
 from argparse import ArgumentParser
+from pathlib import Path
 
 
 def shell(cmd, **kwargs):
@@ -14,8 +15,11 @@ def shell(cmd, **kwargs):
 
 
 parser = ArgumentParser(description='chrissx Media Deployment Manager')
-parser.add_argument('--clone-only', action='store_true')
+parser.add_argument('-c', '--clone-only', action='store_true')
 parser.add_argument('-d', '--deployments', default='/etc/deployments.csv')
+parser.add_argument('-H', '--home', default='/var/deployment')
+parser.add_argument('-D', '--global-dist', action='store_true')
+# TODO: configurable delay
 args = parser.parse_args()
 
 # TODO: consider adding the config file as an arg
@@ -41,6 +45,12 @@ while True:
             else:
                 # TODO: redirected stdout/err
                 run('./deploy')
+            if args.global_dist and exists('dist'):
+                dest = args.home + "/dist" + deployment[0]
+                Path(dest).mkdir(parents=True, exist_ok=True)
+                shell(
+                    'rsync -aHhE --remove-source-files --delete-after --delay-updates dist "'
+                    + dest + '"')
         except Exception as e:
             print_exc()
         sleep(30)
