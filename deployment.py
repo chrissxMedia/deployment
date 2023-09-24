@@ -3,24 +3,30 @@ from csv import reader
 from os import chdir
 from os.path import exists
 from subprocess import run
-from sys import argv
 from time import sleep
 from traceback import print_exc
+from argparse import ArgumentParser
 
 
 def shell(cmd, **kwargs):
     print(cmd)
     run(cmd, shell=True, check=True, **kwargs)
 
+
+parser = ArgumentParser(description='chrissx Media Deployment Manager')
+parser.add_argument('--clone-only', action='store_true')
+parser.add_argument('-d', '--deployments', default='/etc/deployments.csv')
+args = parser.parse_args()
+
 # TODO: consider adding the config file as an arg
 deployments = []
-with open('/etc/deployments.csv', encoding='utf-8') as f:
+with open(args.deployments, encoding='utf-8') as f:
     for line in reader(f):
         deployments.append(tuple(line))
         if not exists(line[0]):
             shell(f'git clone "{line[1]}" "{line[0]}"')
 
-if len(argv) >= 2 and argv[1] == "--clone-only":
+if args.clone_only:
     exit(0)
 
 while True:
@@ -33,7 +39,7 @@ while True:
             if not exists('deploy'):
                 shell(deployment[2])
             else:
-                # TODO: redirected stdout/err and check=False
+                # TODO: redirected stdout/err
                 run('./deploy')
         except Exception as e:
             print_exc()
