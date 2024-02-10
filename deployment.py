@@ -22,13 +22,18 @@ parser.add_argument('-D', '--global-dist', action='store_true')
 # TODO: configurable delay
 args = parser.parse_args()
 
+
+def path(d):
+    return d[0] if d[0].startswith('/') else args.home + '/' + d[0]
+
+
 # TODO: consider adding the config file as an arg
 deployments = []
 with open(args.deployments, encoding='utf-8') as f:
     for line in reader(f):
         deployments.append(tuple(line))
-        if not exists(line[0]):
-            shell(f'git clone "{line[1]}" "{line[0]}"')
+        if not exists(path(line)):
+            shell(f'git clone "{line[1]}" "{path(line)}"')
 
 if args.clone_only:
     exit(0)
@@ -37,8 +42,8 @@ while True:
     for deployment in deployments:
         try:
             # TODO: should deploy still run if we cant pull?
-            print('cd ' + deployment[0])
-            chdir(deployment[0])
+            print('cd ' + path(deployment))
+            chdir(path(deployment))
             shell('git pull')
             if not exists('deploy'):
                 shell(deployment[2])
@@ -46,7 +51,8 @@ while True:
                 # TODO: redirected stdout/err
                 run('./deploy')
             if args.global_dist and exists('dist'):
-                dest = args.home + "/dist" + deployment[0]
+                dest = args.home + "/dist" + ('' if deployment[0].startswith('/')
+                                              else '/') + deployment[0]
                 Path(dest).mkdir(parents=True, exist_ok=True)
                 shell(
                     'rsync -aHhE --remove-source-files --delete-after --delay-updates dist "'
