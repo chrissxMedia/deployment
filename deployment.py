@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 
-def shell(cmd, **kwargs):
+def shell(cmd: str, **kwargs):
     print(cmd)
     run(cmd, shell=True, check=True, **kwargs)
 
@@ -19,11 +19,11 @@ parser.add_argument('-c', '--clone-only', action='store_true')
 parser.add_argument('-d', '--deployments', default='/etc/deployments.csv')
 parser.add_argument('-H', '--home', default='/var/deployment')
 parser.add_argument('-D', '--global-dist', action='store_true')
-# TODO: configurable delay
+parser.add_argument('--delay', type='int', default=30)
 args = parser.parse_args()
 
 
-def path(d):
+def path(d: list[str]):
     return d[0] if d[0].startswith('/') else args.home + '/' + d[0]
 
 
@@ -59,4 +59,4 @@ while True:
                     + dest + '"')
         except Exception as e:
             print_exc()
-        sleep(30)
+        sleep(args.delay)
