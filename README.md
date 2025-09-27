@@ -25,13 +25,18 @@ yet. That's the next step.
 
 ## Configuration & Usage
 
-`deployment` reads a list of deployments from `/etc/deployments.csv`, which
-looks like this:
+`deployment` reads a list of deployments from `/etc/deployments.csv`
+([configurable](#options)), which looks like this:
 
 ```csv
 /var/www/site1,https://git.chrissx.de/site1.git
-/var/www/site2,https://git.chrissx.de/site2.git
+site2,https://git.chrissx.de/site2.git
 ```
+
+Deployments starting with a forward slash (`/`) are interpreted as absolute
+paths, deployments without a leading slash live in the `deployment` _Home_.
+In this example, `site1` lives at `/var/www/site1` and `site2` lives at
+`/var/deployment/site2` ([configurable](#options)).
 
 Now create a file called `deploy` at the root of every Git repository that is
 then automatically executed by `deployment`. It might look something like this:
@@ -45,3 +50,16 @@ npm run build
 ```
 
 Please also make sure you `chmod +x` it.
+
+If a repository does not have a `deploy` script, `deployment` will just keep it
+up to date (`git pull`).
+
+### Options
+
+| Long flag       | Short flag | Default                | Purpose / Note                                                          |
+|-----------------|------------|------------------------|-------------------------------------------------------------------------|
+| `--clone-only`  | `-c`       | **False**              | Only clone the `git` repositories and exit, don't pull or build         |
+| `--deployments` | `-d`       | `/etc/deployments.csv` | Path to the deployment list                                             |
+| `--home`        | `-H`       | `/var/deployment`      | `deployment` _Home_ (explained above)                                   |
+| `--global-dist` | `-D`       | **False**              | Copy all `dist` directories to the _Home_ (e.g. `/var/deployment/dist`) |
+| `--delay`       | (none)     | `30` (seconds)         | Time to wait after pulling and building each deployment                 |
