@@ -19,7 +19,7 @@ parser.add_argument('-c', '--clone-only', action='store_true')
 parser.add_argument('-d', '--deployments', default='/etc/deployments.csv')
 parser.add_argument('-H', '--home', default='/var/deployment')
 parser.add_argument('-D', '--global-dist', action='store_true')
-parser.add_argument('--delay', type='int', default=30)
+parser.add_argument('--delay', type=int, default=30)
 args = parser.parse_args()
 
 
