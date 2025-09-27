@@ -5,26 +5,14 @@
 
 ## Installation
 
-Because of the extreme simplicity, we currently don't have packages. Just drop
-`deployment.py` somewhere, like `/usr/local/bin/deployment`.
+Because of the extreme simplicity, we currently don't have packages. Just
+install Python 3.9+ and `rsync` and drop `deployment.py` somewhere, like
+`/usr/local/bin/deployment`.
 
 If you wanted to, you could just run it in your shell, but of course we don't
 recommend that. If you use another init system, you'll have to figure it out
-yourself, but for `systemd` just create a file at
-`/etc/systemd/system/deployment.service` that can be as simple as this:
-
-```ini
-[Unit]
-Description=chrissx Media deployment manager
-
-[Service]
-ExecStart=/usr/local/bin/deployment
-
-[Install]
-WantedBy=multi-user.target
-```
-
-And then enable it:
+yourself, but for `systemd` you can drop [our config](deployment.service)
+into `/etc/systemd/system/deployment.service`, and enable it like this:
 
 ```sh
 systemctl daemon-reload

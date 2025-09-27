@@ -1,0 +1,8 @@
+[Unit]
+Description=chrissx Media deployment manager
+
+[Service]
+ExecStart=/usr/local/bin/deployment
+
+[Install]
+WantedBy=multi-user.target
