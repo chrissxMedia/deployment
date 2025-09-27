@@ -5,23 +5,34 @@
 
 ## Installation
 
+> [!NOTE]
+> If you followed these steps and `deployment` keeps crashing, you're on the
+> right path. Just move on to the configuration step and restart afterwards.
+
+## Docker
+
+> [!WARNING]
+> The Docker image is still new and has not been tested much.
+> Expect to run into issues.
+
+```sh
+docker run -d --restart=unless-stopped --pull=always -v$PWD/deployments.csv:/etc/deployments.csv -v$PWD/deployment-data:/var/deployment chrissx/deployment:latest
+```
+
+## systemd
+
 Because of the extreme simplicity, we currently don't have packages. Just
 install Python 3.9+ and `rsync` and drop `deployment.py` somewhere, like
 `/usr/local/bin/deployment`.
 
-If you wanted to, you could just run it in your shell, but of course we don't
-recommend that. If you use another init system, you'll have to figure it out
-yourself, but for `systemd` you can drop [our config](deployment.service)
-into `/etc/systemd/system/deployment.service`, and enable it like this:
+You can drop [our config](deployment.service) into
+`/etc/systemd/system/deployment.service`, or write your own,
+and enable it like this:
 
 ```sh
 systemctl daemon-reload
 systemctl enable deployment.service --now
 ```
-
-If you now checked `systemctl status deployment.service` and found it to have
-already crashed, it's probably because you haven't created the configuration
-yet. That's the next step.
 
 ## Configuration & Usage
 
