@@ -45,11 +45,9 @@ while True:
             print('cd ' + path(deployment))
             chdir(path(deployment))
             shell('git pull')
-            if not exists('deploy'):
-                shell(deployment[2])
-            else:
+            if exists('deploy'):
                 # TODO: redirected stdout/err
-                run('./deploy')
+                run('./deploy', check=True)
             if args.global_dist and exists('dist'):
                 dest = args.home + "/dist" + ('' if deployment[0].startswith('/')
                                               else '/') + deployment[0]
