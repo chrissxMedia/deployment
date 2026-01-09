@@ -1,13 +1,14 @@
 # deployment
 
 `deployment` uses `git` and external tools (`siwedt`, `parcel`, `webpack`,
-`make`, ...) to deploy anything, but mainly webpages.
+`make`, ...) to deploy anything, but mainly web pages.
 
 ## Installation
 
 > [!NOTE]
 > If you followed these steps and `deployment` keeps crashing, you're on the
-> right path. Just move on to the configuration step and restart afterwards.
+> right path. Move on to [the configuration step](#configuration--usage) and
+> restart afterwards.
 
 ## Docker
 
