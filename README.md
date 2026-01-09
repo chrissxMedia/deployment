@@ -10,17 +10,7 @@
 > right path. Move on to [the configuration step](#configuration--usage) and
 > restart afterwards.
 
-## Docker
-
-> [!WARNING]
-> The Docker image is still new and has not been tested much.
-> Expect to run into issues.
-
-```sh
-docker run -d --restart=unless-stopped --pull=always -v$PWD/deployments.csv:/etc/deployments.csv -v$PWD/deployment-data:/var/deployment chrissx/deployment:latest
-```
-
-## systemd
+### systemd
 
 Because of the extreme simplicity, we currently don't have packages. Just
 install Python 3.9+ and `rsync` and drop `deployment.py` somewhere, like
@@ -33,6 +23,20 @@ and enable it like this:
 ```sh
 systemctl daemon-reload
 systemctl enable deployment.service --now
+```
+
+### Docker
+
+> [!WARNING]
+> The Docker image is still new and has not been tested much.
+> Expect to run into issues.
+
+> [!WARNING]
+> The Docker image currently does not include any tools (e.g. `npm`, `make`)
+> that your `deploy` scripts will probably need.
+
+```sh
+docker run -d --restart=unless-stopped --pull=always -v$PWD/deployments.csv:/etc/deployments.csv -v$PWD/deployment-data:/var/deployment chrissx/deployment:latest
 ```
 
 ## Configuration & Usage
