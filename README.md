@@ -3,6 +3,15 @@
 `deployment` uses `git` and external tools (`siwedt`, `parcel`, `webpack`,
 `make`, ...) to deploy anything, but mainly web pages.
 
+## Security Considerations
+
+> [!CAUTION]
+> Never use the current version of `deployment` to deploy untrusted code.
+
+The `deploy` scripts allow arbitrary code execution by design. While this can be
+partially mitigated with containers and VMs, and we might explore hardening
+measures in future versions, ACE is also common in many modern build systems.
+
 ## Installation
 
 > [!NOTE]
