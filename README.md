@@ -74,11 +74,12 @@ then automatically executed by `deployment`. It might look something like this:
 #!/bin/sh
 set -uxe
 
-npm install
+npm ci
 npm run build
 ```
 
-Please also make sure you `chmod +x` it.
+> [!IMPORTANT]
+> Please also make sure you `chmod +x` it.
 
 If a repository does not have a `deploy` script, `deployment` will just keep it
 up to date (`git pull`).
