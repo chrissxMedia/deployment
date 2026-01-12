@@ -19,10 +19,10 @@ measures in future versions, ACE is also common in many modern build systems.
 > right path. Move on to [the configuration step](#configuration--usage) and
 > restart afterwards.
 
-### systemd
+### System service (e.g. systemd)
 
 Because of the extreme simplicity, we currently don't have packages. Just
-install Python 3.9+ and `rsync` and drop `deployment.py` somewhere, like
+install Python 3.9+, `git` and `rsync` and drop `deployment.py` somewhere, like
 `/usr/local/bin/deployment`.
 
 You can drop [our config](deployment.service) into
@@ -37,12 +37,16 @@ systemctl enable deployment.service --now
 ### Docker
 
 > [!WARNING]
-> The Docker image is still new and has not been tested much.
-> Expect to run into issues.
+> Since your deployments probably need external tools, there is
+> no one-size-fits-all Docker image.
+
+For chrissx Media and _befriended projects_' (i.e. projects/people we provide
+hosting to) deployments we only require `npm`. Therefore, we provide
+[an `ubuntu:latest`-based image containing `deployment` and Node 24](Dockerfile):
 
 > [!WARNING]
-> The Docker image currently does not include any tools (e.g. `npm`, `make`)
-> that your `deploy` scripts will probably need.
+> This image is still new and has not been tested much.
+> Expect to run into issues.
 
 ```sh
 docker run -d --restart=unless-stopped --pull=always -v$PWD/deployments.csv:/etc/deployments.csv -v$PWD/deployment-data:/var/deployment chrissx/deployment:latest
