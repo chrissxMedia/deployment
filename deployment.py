@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 def shell(cmd: str, **kwargs):
-    print(cmd)
+    print(cmd, flush=True)
     run(cmd, shell=True, check=True, **kwargs)
 
 
@@ -42,7 +42,7 @@ while True:
     for deployment in deployments:
         try:
             # TODO: should deploy still run if we cant pull?
-            print('cd ' + path(deployment))
+            print('cd ' + path(deployment), flush=True)
             chdir(path(deployment))
             shell('git pull')
             if exists('deploy'):
