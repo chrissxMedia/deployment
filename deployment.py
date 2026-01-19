@@ -9,9 +9,9 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 
-def shell(cmd: str, **kwargs):
+def cmd(cmd: list[str], **kwargs):
     print(cmd, flush=True)
-    run(cmd, shell=True, check=True, **kwargs)
+    run(cmd, shell=False, check=True, **kwargs)
 
 
 parser = ArgumentParser(description='chrissx Media Deployment Manager')
@@ -33,7 +33,7 @@ with open(args.deployments, encoding='utf-8') as f:
     for line in reader(f):
         deployments.append(tuple(line))
         if not exists(path(line)):
-            shell(f'git clone "{line[1]}" "{path(line)}"')
+            cmd(['git', 'clone', line[1], path(line)])
 
 if args.clone_only:
     exit(0)
@@ -44,7 +44,7 @@ while True:
             # TODO: should deploy still run if we cant pull?
             print('cd ' + path(deployment), flush=True)
             chdir(path(deployment))
-            shell('git pull')
+            cmd(['git', 'pull'])
             if exists('deploy'):
                 # TODO: redirected stdout/err
                 run('./deploy', check=True)
@@ -52,9 +52,8 @@ while True:
                 dest = args.home + "/dist" + ('' if deployment[0].startswith('/')
                                               else '/') + deployment[0]
                 Path(dest).mkdir(parents=True, exist_ok=True)
-                shell(
-                    'rsync -aHhE --remove-source-files --delete-after --delay-updates dist "'
-                    + dest + '"')
+                cmd(['rsync', '-aHhE', '--remove-source-files',
+                    '--delete-after', '--delay-updates', 'dist', dest])
         except Exception as e:
             print_exc()
         sleep(args.delay)
