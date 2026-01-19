@@ -49,7 +49,7 @@ hosting to) deployments we only require `npm`. Therefore, we provide
 > Expect to run into issues.
 
 ```sh
-docker run -d --restart=unless-stopped --pull=always -v$PWD/deployments.csv:/etc/deployments.csv -v$PWD/deployment-data:/var/deployment chrissx/deployment:latest
+docker run -d --restart=unless-stopped --pull=always --init -v$PWD/deployments.csv:/etc/deployments.csv -v$PWD/deployment-data:/var/deployment chrissx/deployment:latest
 ```
 
 ## Configuration & Usage
@@ -80,6 +80,13 @@ npm run build
 
 > [!IMPORTANT]
 > Please also make sure you `chmod +x` it.
+
+> [!WARNING]
+> Many build systems will leave behind Zombie Processes, which count towards
+your system's process limit (`ulimit -n`). Cleaning them up is part of `init`'s
+job. Therefore, Docker containers should use
+[`tini`](https://github.com/krallin/tini) (`--init`), unless you have verified
+that your `deploy` scripts don't leave anything behind.
 
 If a repository does not have a `deploy` script, `deployment` will just keep it
 up to date (`git pull`).
