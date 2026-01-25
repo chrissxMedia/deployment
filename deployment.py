@@ -9,19 +9,22 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 
-def cmd(cmd: list[str], **kwargs):
-    print(cmd, flush=True)
-    run(cmd, shell=False, check=True, **kwargs)
-
-
 parser = ArgumentParser(description='chrissx Media Deployment Manager')
+parser.add_argument('-v', '--version', action='version', version='deployment 0.9')
+# TODO: help
 parser.add_argument('-c', '--clone-only', action='store_true')
 parser.add_argument('-d', '--deployments', default='/etc/deployments.csv')
 parser.add_argument('-H', '--home', default='/var/deployment')
 parser.add_argument('-D', '--global-dist', action='store_true')
+parser.add_argument('-n', '--dry-run', action='store_true')
 parser.add_argument('--delay', type=int, default=30)
 args = parser.parse_args()
 
+
+def cmd(cmd: list[str], **kwargs):
+    print(cmd, flush=True)
+    if not args.dry_run:
+        run(cmd, shell=False, check=True, **kwargs)
 
 def path(d: list[str]):
     return d[0] if d[0].startswith('/') else args.home + '/' + d[0]
@@ -57,3 +60,5 @@ while True:
         except Exception as e:
             print_exc()
         sleep(args.delay)
+    if args.dry_run:
+        exit(0)
