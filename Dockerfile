@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-ARG NODE_VERSION=24.x
+ARG NODE_VERSION=26.x
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt upgrade -y && apt autoremove
