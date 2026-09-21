@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 parser = ArgumentParser(description='chrissx Media Deployment Manager')
-parser.add_argument('-v', '--version', action='version', version='deployment 0.9',
+parser.add_argument('-v', '--version', action='version', version='deployment 0.10',
                     help='show the version and exit')
 parser.add_argument('-c', '--clone-only', action='store_true',
                     help='clone missing repositories and exit without pulling or building')
