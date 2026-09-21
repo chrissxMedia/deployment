@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from csv import reader
 from os import chdir
-from os.path import exists
+from os.path import exists, join
 from subprocess import run
 from time import sleep
 from traceback import print_exc
@@ -26,17 +26,14 @@ def cmd(cmd: list[str], **kwargs):
     if not args.dry_run:
         run(cmd, shell=False, check=True, **kwargs)
 
-def path(d: list[str]):
-    return d[0] if d[0].startswith('/') else args.home + '/' + d[0]
 
-
-# TODO: consider adding the config file as an arg
 deployments = []
 with open(args.deployments, encoding='utf-8') as f:
     for line in reader(f):
         deployments.append(tuple(line))
-        if not exists(path(line)):
-            cmd(['git', 'clone', line[1], path(line)])
+        path = join(args.home, line[0])
+        if not exists(path):
+            cmd(['git', 'clone', line[1], path])
 
 if args.clone_only:
     exit(0)
@@ -45,15 +42,15 @@ while True:
     for deployment in deployments:
         try:
             # TODO: should deploy still run if we cant pull?
-            print('cd ' + path(deployment), flush=True)
-            chdir(path(deployment))
+            path = join(args.home, deployment[0])
+            print('cd ' + path, flush=True)
+            chdir(path)
             cmd(['git', 'pull'])
             if exists('deploy'):
                 # TODO: redirected stdout/err
                 run('./deploy', check=True)
             if args.global_dist and exists('dist'):
-                dest = args.home + "/dist" + ('' if deployment[0].startswith('/')
-                                              else '/') + deployment[0]
+                dest = args.home + '/dist/' + deployment[0].lstrip('/')
                 Path(dest).mkdir(parents=True, exist_ok=True)
                 cmd(['rsync', '-aHhE', '--remove-source-files',
                     '--delete-after', '--delay-updates', 'dist', dest])
