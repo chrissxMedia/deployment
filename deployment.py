@@ -16,7 +16,8 @@ parser.add_argument('-c', '--clone-only', action='store_true')
 parser.add_argument('-d', '--deployments', default='/etc/deployments.csv')
 parser.add_argument('-H', '--home', default='/var/deployment')
 parser.add_argument('-D', '--global-dist', action='store_true')
-parser.add_argument('-n', '--dry-run', action='store_true')
+parser.add_argument('-n', '--dry-run', action='store_true',
+                    help='print commands without executing them or creating directories, then exit')
 parser.add_argument('--delay', type=int, default=30)
 args = parser.parse_args()
 
@@ -43,19 +44,23 @@ while True:
         try:
             # TODO: should deploy still run if we cant pull?
             path = join(args.home, deployment[0])
+            if args.dry_run and not exists(path):
+                continue
             print('cd ' + path, flush=True)
             chdir(path)
             cmd(['git', 'pull'])
             if exists('deploy'):
                 # TODO: redirected stdout/err
-                run('./deploy', check=True)
+                cmd(['./deploy'])
             if args.global_dist and exists('dist'):
                 dest = args.home + '/dist/' + deployment[0].lstrip('/')
-                Path(dest).mkdir(parents=True, exist_ok=True)
+                if not args.dry_run:
+                    Path(dest).mkdir(parents=True, exist_ok=True)
                 cmd(['rsync', '-aHhE', '--remove-source-files',
                     '--delete-after', '--delay-updates', 'dist', dest])
         except Exception as e:
             print_exc()
-        sleep(args.delay)
+        if not args.dry_run:
+            sleep(args.delay)
     if args.dry_run:
         exit(0)
