@@ -10,15 +10,20 @@ from pathlib import Path
 
 
 parser = ArgumentParser(description='chrissx Media Deployment Manager')
-parser.add_argument('-v', '--version', action='version', version='deployment 0.9')
-# TODO: help
-parser.add_argument('-c', '--clone-only', action='store_true')
-parser.add_argument('-d', '--deployments', default='/etc/deployments.csv')
-parser.add_argument('-H', '--home', default='/var/deployment')
-parser.add_argument('-D', '--global-dist', action='store_true')
+parser.add_argument('-v', '--version', action='version', version='deployment 0.9',
+                    help='show the version and exit')
+parser.add_argument('-c', '--clone-only', action='store_true',
+                    help='clone missing repositories and exit without pulling or building')
+parser.add_argument('-d', '--deployments', default='/etc/deployments.csv',
+                    help='path to the deployment CSV file (default: %(default)s)')
+parser.add_argument('-H', '--home', default='/var/deployment',
+                    help='base directory for relative deployment paths (default: %(default)s)')
+parser.add_argument('-D', '--global-dist', action='store_true',
+                    help='collect build output under HOME/dist')
 parser.add_argument('-n', '--dry-run', action='store_true',
                     help='print commands without executing them or creating directories, then exit')
-parser.add_argument('--delay', type=int, default=30)
+parser.add_argument('--delay', type=int, default=30,
+                    help='seconds to wait after each deployment (default: %(default)s)')
 args = parser.parse_args()
 
 
@@ -50,7 +55,6 @@ while True:
             chdir(path)
             cmd(['git', 'pull'])
             if exists('deploy'):
-                # TODO: redirected stdout/err
                 cmd(['./deploy'])
             if args.global_dist and exists('dist'):
                 dest = args.home + '/dist/' + deployment[0].lstrip('/')
