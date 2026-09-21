@@ -26,16 +26,14 @@ def cmd(cmd: list[str], **kwargs):
     if not args.dry_run:
         run(cmd, shell=False, check=True, **kwargs)
 
-def path(d: list[str]):
-    return join(args.home, d[0])
-
 
 deployments = []
 with open(args.deployments, encoding='utf-8') as f:
     for line in reader(f):
         deployments.append(tuple(line))
-        if not exists(path(line)):
-            cmd(['git', 'clone', line[1], path(line)])
+        path = join(args.home, line[0])
+        if not exists(path):
+            cmd(['git', 'clone', line[1], path])
 
 if args.clone_only:
     exit(0)
@@ -44,8 +42,9 @@ while True:
     for deployment in deployments:
         try:
             # TODO: should deploy still run if we cant pull?
-            print('cd ' + path(deployment), flush=True)
-            chdir(path(deployment))
+            path = join(args.home, deployment[0])
+            print('cd ' + path, flush=True)
+            chdir(path)
             cmd(['git', 'pull'])
             if exists('deploy'):
                 # TODO: redirected stdout/err
