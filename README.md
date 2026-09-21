@@ -100,8 +100,4 @@ up to date (`git pull`).
 | `--home`        | `-H`       | `/var/deployment`      | `deployment` _Home_ (explained above)                                   |
 | `--global-dist` | `-D`       | **False**              | Copy all `dist` directories to the _Home_ (e.g. `/var/deployment/dist`) |
 | `--delay`       | (none)     | `30` (seconds)         | Time to wait after pulling and building each deployment                 |
-| `--dry-run`     | `-n`       | **False**              | Print commands without executing them or creating directories, then exit without waiting |
-
-Dry-run can only inspect existing repositories and build output. For missing
-repositories it prints the clone command, and with `--global-dist` it prints
-`rsync` commands only for `dist` directories that already exist.
+| `--dry-run`     | `-n`       | **False**              | Prints commands but doesn't execute them (can't predict `rsync`/`-D`)   |
