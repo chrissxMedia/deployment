@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from csv import reader
 from os import chdir
-from os.path import exists
+from os.path import exists, join
 from subprocess import run
 from time import sleep
 from traceback import print_exc
@@ -27,10 +27,9 @@ def cmd(cmd: list[str], **kwargs):
         run(cmd, shell=False, check=True, **kwargs)
 
 def path(d: list[str]):
-    return d[0] if d[0].startswith('/') else args.home + '/' + d[0]
+    return join(args.home, d[0])
 
 
-# TODO: consider adding the config file as an arg
 deployments = []
 with open(args.deployments, encoding='utf-8') as f:
     for line in reader(f):
@@ -52,8 +51,7 @@ while True:
                 # TODO: redirected stdout/err
                 run('./deploy', check=True)
             if args.global_dist and exists('dist'):
-                dest = args.home + "/dist" + ('' if deployment[0].startswith('/')
-                                              else '/') + deployment[0]
+                dest = args.home + '/dist/' + deployment[0].lstrip('/')
                 Path(dest).mkdir(parents=True, exist_ok=True)
                 cmd(['rsync', '-aHhE', '--remove-source-files',
                     '--delete-after', '--delay-updates', 'dist', dest])
