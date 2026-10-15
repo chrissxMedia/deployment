@@ -26,8 +26,8 @@ install Python 3.9+, `git` and `rsync` and drop `deployment.py` somewhere, like
 `/usr/local/bin/deployment`.
 
 You can drop [our config](deployment.service) into
-`/etc/systemd/system/deployment.service`, or write your own,
-and enable it like this:
+`/etc/systemd/system/deployment.service`, or write your own, and enable it like
+this:
 
 ```sh
 systemctl daemon-reload
@@ -37,20 +37,28 @@ systemctl enable deployment.service --now
 ### Docker
 
 > [!WARNING]
-> Since your deployments probably need external tools, there is
-> no one-size-fits-all Docker image.
+> Since your deployments probably need external tools, there is no
+> one-size-fits-all Docker image.
 
 For chrissx Media and _befriended projects_' (i.e. projects/people we provide
 hosting to) deployments we only require `npm`. Therefore, we provide
 [an `ubuntu:latest`-based image containing `deployment` and Node 24](Dockerfile):
 
 > [!WARNING]
-> This image is still new and has not been tested much.
-> Expect to run into issues.
+> This image is still new and has not been tested much. Expect to run into
+> issues.
 
 ```sh
 docker run -d --restart=unless-stopped --pull=always --init -v$PWD/deployments.csv:/etc/deployments.csv -v$PWD/deployment-data:/var/deployment chrissx/deployment:latest
 ```
+
+The image enables `--health-file /tmp/deployment-health` by default. After each
+fully successful deployment pass, `deployment` writes an expiry timestamp to
+that file. Startup and deployment errors remove the file. Missing or expired
+files fail the healthcheck. An empty deployment list never reports healthy.
+`--dry-run` and `--clone-only` leave the file untouched.
+
+The expiry budget is `number of deployments × --delay × 2`.
 
 ## Configuration & Usage
 
@@ -63,8 +71,8 @@ site2,https://git.chrissx.de/site2.git
 ```
 
 Deployments starting with a forward slash (`/`) are interpreted as absolute
-paths, deployments without a leading slash live in the `deployment` _Home_.
-In this example, `site1` lives at `/var/www/site1` and `site2` lives at
+paths, deployments without a leading slash live in the `deployment` _Home_. In
+this example, `site1` lives at `/var/www/site1` and `site2` lives at
 `/var/deployment/site2` ([configurable](#options)).
 
 Now create a file called `deploy` at the root of every Git repository that is
@@ -83,10 +91,10 @@ npm run build
 
 > [!WARNING]
 > Many build systems will leave behind Zombie Processes, which count towards
-your system's process limit (`ulimit -n`). Cleaning them up is part of `init`'s
-job. Therefore, Docker containers should use
-[`tini`](https://github.com/krallin/tini) (`--init`), unless you have verified
-that your `deploy` scripts don't leave anything behind.
+> your system's process limit (`ulimit -n`). Cleaning them up is part of
+> `init`'s job. Therefore, Docker containers should use
+> [`tini`](https://github.com/krallin/tini) (`--init`), unless you have verified
+> that your `deploy` scripts don't leave anything behind.
 
 If a repository does not have a `deploy` script, `deployment` will just keep it
 up to date (`git pull`).
@@ -94,10 +102,11 @@ up to date (`git pull`).
 ### Options
 
 | Long flag       | Short flag | Default                | Purpose / Note                                                          |
-|-----------------|------------|------------------------|-------------------------------------------------------------------------|
+| --------------- | ---------- | ---------------------- | ----------------------------------------------------------------------- |
 | `--clone-only`  | `-c`       | **False**              | Only clone the `git` repositories and exit, don't pull or build         |
 | `--deployments` | `-d`       | `/etc/deployments.csv` | Path to the deployment list                                             |
 | `--home`        | `-H`       | `/var/deployment`      | `deployment` _Home_ (explained above)                                   |
 | `--global-dist` | `-D`       | **False**              | Copy all `dist` directories to the _Home_ (e.g. `/var/deployment/dist`) |
 | `--delay`       | (none)     | `30` (seconds)         | Time to wait after pulling and building each deployment                 |
+| `--health-file` | (none)     | (unset)                | Write an expiry timestamp after successful passes                       |
 | `--dry-run`     | `-n`       | **False**              | Prints commands but doesn't execute them (can't predict `rsync`/`-D`)   |
