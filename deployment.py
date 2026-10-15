@@ -3,14 +3,14 @@ from csv import reader
 from os import chdir
 from os.path import exists, join
 from subprocess import run
-from time import sleep
+from time import sleep, time
 from traceback import print_exc
 from argparse import ArgumentParser
 from pathlib import Path
 
 
 parser = ArgumentParser(description='chrissx Media Deployment Manager')
-parser.add_argument('-v', '--version', action='version', version='deployment 0.10',
+parser.add_argument('-v', '--version', action='version', version='deployment 0.11',
                     help='show the version and exit')
 parser.add_argument('-c', '--clone-only', action='store_true',
                     help='clone missing repositories and exit without pulling or building')
@@ -24,7 +24,14 @@ parser.add_argument('-n', '--dry-run', action='store_true',
                     help='print commands without executing them or creating directories, then exit')
 parser.add_argument('--delay', type=int, default=30,
                     help='seconds to wait after each deployment (default: %(default)s)')
+parser.add_argument('--health-file',
+                    help='write a health expiry timestamp to this file')
 args = parser.parse_args()
+
+health_file = None
+if args.health_file and not args.dry_run and not args.clone_only:
+    health_file = Path(args.health_file).absolute()
+    health_file.unlink(missing_ok=True)
 
 
 def cmd(cmd: list[str], **kwargs):
@@ -45,6 +52,7 @@ if args.clone_only:
     exit(0)
 
 while True:
+    healthy = True
     for deployment in deployments:
         try:
             # TODO: should deploy still run if we cant pull?
@@ -64,7 +72,12 @@ while True:
                     '--delete-after', '--delay-updates', 'dist', dest])
         except Exception as e:
             print_exc()
+            healthy = False
+            if health_file:
+                health_file.unlink(missing_ok=True)
         if not args.dry_run:
             sleep(args.delay)
     if args.dry_run:
         exit(0)
+    if health_file and healthy and deployments:
+        health_file.write_text(str(time() + len(deployments) * args.delay * 2))
