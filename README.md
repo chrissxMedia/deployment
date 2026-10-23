@@ -58,6 +58,10 @@ that file. Startup and deployment errors remove the file. Missing or expired
 files fail the healthcheck. An empty deployment list never reports healthy.
 `--dry-run` and `--clone-only` leave the file untouched.
 
+The first deployment pass skips all delays. The image allows up to ten minutes
+for startup before healthcheck failures count towards marking it unhealthy. A
+successful check marks it healthy immediately, without waiting out that period.
+
 The expiry budget is `number of deployments × --delay × 2`.
 
 ## Configuration & Usage

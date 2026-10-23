@@ -14,6 +14,6 @@ RUN apt update && apt install -y nodejs && npm i -g npm
 
 COPY deployment.py /usr/local/bin/deployment
 
-HEALTHCHECK CMD python3 -c 'import time; from pathlib import Path; exit(0 if time.time() < float(Path("/tmp/deployment-health").read_text()) else 1)'
+HEALTHCHECK --start-period=10m CMD python3 -c 'import time; from pathlib import Path; exit(0 if time.time() < float(Path("/tmp/deployment-health").read_text()) else 1)'
 
 ENTRYPOINT ["python3", "/usr/local/bin/deployment", "--health-file", "/tmp/deployment-health"]
