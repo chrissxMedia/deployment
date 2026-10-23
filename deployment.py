@@ -51,6 +51,7 @@ with open(args.deployments, encoding='utf-8') as f:
 if args.clone_only:
     exit(0)
 
+first_pass = True
 while True:
     healthy = True
     for deployment in deployments:
@@ -75,9 +76,10 @@ while True:
             healthy = False
             if health_file:
                 health_file.unlink(missing_ok=True)
-        if not args.dry_run:
+        if not args.dry_run and not first_pass:
             sleep(args.delay)
     if args.dry_run:
         exit(0)
     if health_file and healthy and deployments:
         health_file.write_text(str(time() + len(deployments) * args.delay * 2))
+    first_pass = False
